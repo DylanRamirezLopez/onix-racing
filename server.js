@@ -3,7 +3,7 @@ import express from 'express';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { readFileSync, existsSync, writeFileSync, mkdirSync } from 'fs';
-import { randomUUID, timingSafeEqual } from 'crypto';
+import { randomUUID, timingSafeEqual, scryptSync } from 'crypto';
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 
@@ -12,13 +12,14 @@ const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.DEEPSEEK_API_KEY;
 const JWT_SECRET = process.env.JWT_SECRET || randomUUID();
 const ADMIN_USER = process.env.ADMIN_USER;
-const ADMIN_PASS = process.env.ADMIN_PASS;
+const ADMIN_PASS_HASH = process.env.ADMIN_PASS_HASH;
+const ADMIN_PASS_SALT = process.env.ADMIN_PASS_SALT;
 const TELEMETRY_FILE = './data/telemetry.json';
 const CTX_PATH = './data/context.txt';
 
 // ── Validar variables de entorno requeridas ──
-if (!ADMIN_USER || !ADMIN_PASS) {
-  console.error('[FATAL] ADMIN_USER y ADMIN_PASS deben definirse en .env');
+if (!ADMIN_USER || !ADMIN_PASS_HASH || !ADMIN_PASS_SALT) {
+  console.error('[FATAL] ADMIN_USER, ADMIN_PASS_HASH y ADMIN_PASS_SALT deben definirse en .env');
   process.exit(1);
 }
 if (!process.env.DEEPSEEK_API_KEY) {
@@ -126,16 +127,20 @@ app.post('/api/telemetry', chatLimiter, (req, res) => {
 // Admin login
 app.post('/api/admin/login', authLimiter, (req, res) => {
   const { username, password } = req.body;
+  if (typeof username !== 'string' || typeof password !== 'string') {
+    return res.status(400).json({ error: 'Invalid input' });
+  }
+  const passHash = scryptSync(password, ADMIN_PASS_SALT, 64).toString('hex');
   const userMatch = timingSafeEqual
     ? (() => {
-        const u1 = Buffer.from(username || '');
+        const u1 = Buffer.from(username);
         const u2 = Buffer.from(ADMIN_USER);
-        const p1 = Buffer.from(password || '');
-        const p2 = Buffer.from(ADMIN_PASS);
+        const p1 = Buffer.from(passHash);
+        const p2 = Buffer.from(ADMIN_PASS_HASH);
         return u1.length === u2.length && p1.length === p2.length
           && timingSafeEqual(u1, u2) && timingSafeEqual(p1, p2);
       })()
-    : username === ADMIN_USER && password === ADMIN_PASS;
+    : username === ADMIN_USER && passHash === ADMIN_PASS_HASH;
 
   if (!userMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
@@ -156,7 +161,16 @@ app.get('/api/admin/telemetry', authRequired, (req, res) => {
   data.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
   const total = data.length;
   const page = data.slice(parseInt(offset), parseInt(offset) + parseInt(limit));
-  res.json({ data: page, total, offset: parseInt(offset), limit: parseInt(limit) });
+  res.json({
+    data: page.map(e => ({
+      ...e,
+      ip: e.ip ? sanitize(e.ip) : e.ip,
+      isp: e.isp ? sanitize(e.isp) : e.isp,
+      userAgent: e.userAgent ? sanitize(e.userAgent) : e.userAgent,
+      fingerprint: e.fingerprint ? sanitize(e.fingerprint) : e.fingerprint,
+    })),
+    total, offset: parseInt(offset), limit: parseInt(limit)
+  });
 });
 
 // Admin logout
