@@ -11,10 +11,20 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.DEEPSEEK_API_KEY;
 const JWT_SECRET = process.env.JWT_SECRET || randomUUID();
-const ADMIN_USER = process.env.ADMIN_USER || 'admin';
-const ADMIN_PASS = process.env.ADMIN_PASS || 'changeme';
+const ADMIN_USER = process.env.ADMIN_USER;
+const ADMIN_PASS = process.env.ADMIN_PASS;
 const TELEMETRY_FILE = './data/telemetry.json';
 const CTX_PATH = './data/context.txt';
+
+// ── Validar variables de entorno requeridas ──
+if (!ADMIN_USER || !ADMIN_PASS) {
+  console.error('[FATAL] ADMIN_USER y ADMIN_PASS deben definirse en .env');
+  process.exit(1);
+}
+if (!process.env.DEEPSEEK_API_KEY) {
+  console.error('[FATAL] DEEPSEEK_API_KEY debe definirse en .env');
+  process.exit(1);
+}
 
 // ── Inicializar telemetría ──
 if (!existsSync('./data')) mkdirSync('./data', { recursive: true });
