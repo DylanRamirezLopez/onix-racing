@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ONIX Admin · Telemetry</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a000c; --surface:#12001a; --card:#1a0025;
+  --border:rgba(252,1,149,0.15); --text:#f0e6ff; --muted:#9070a0;
+  --pink:#FC0195; --purple:#411145; --gold:#FEC400;
+  --font:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'Cascadia Code','Fira Code','Consolas',monospace;
+}
+html{font-size:14px}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;display:flex;align-items:center;justify-content:center;background-image:radial-gradient(ellipse 60% 40% at 50% 50%,rgba(252,1,149,.06),transparent)}
+.login-wrap{width:100%;max-width:380px;padding:2rem}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:1.5rem;padding:2.5rem 2rem;backdrop-filter:blur(20px);box-shadow:0 0 60px rgba(252,1,149,.08)}
+.login-logo{font-size:2rem;font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.25rem}
+.login-sub{font-size:.75rem;color:var(--muted);margin-bottom:2rem}
+.field{margin-bottom:1.25rem}
+.field label{display:block;font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+.field input{width:100%;background:rgba(65,17,69,.3);border:1px solid var(--border);border-radius:.75rem;padding:.7rem 1rem;font-size:.9rem;color:var(--text);outline:none;transition:border-color .3s}
+.field input:focus{border-color:var(--pink)}
+.btn{width:100%;padding:.8rem;border:none;border-radius:.75rem;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;cursor:pointer;transition:opacity .3s}
+.btn:hover{opacity:.85}
+.error{color:var(--pink);font-size:.8rem;margin-top:.75rem;display:none}
+
+/* Dashboard */
+.dash{display:none;width:100%;max-width:1200px;padding:2rem;margin:0 auto}
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+.dash-title{font-size:1.4rem;font-weight:700}
+.dash-title span{color:var(--pink)}
+.dash-badge{font-size:.65rem;color:var(--muted);font-family:var(--mono)}
+.btn-sm{padding:.45rem 1.2rem;border:none;border-radius:100px;font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:rgba(252,1,149,.15);color:var(--pink);cursor:pointer;transition:all .3s}
+.btn-sm:hover{background:rgba(252,1,149,.3)}
+.filters{display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.filter-input{background:rgba(65,17,69,.3);border:1px solid var(--border);border-radius:.65rem;padding:.5rem .8rem;font-size:.78rem;color:var(--text);outline:none;width:160px;max-width:100%}
+.filter-input:focus{border-color:var(--pink)}
+.filter-input::placeholder{color:var(--muted)}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:1rem;background:var(--card)}
+table{width:100%;border-collapse:collapse;font-size:.78rem}
+th{text-align:left;padding:.75rem 1rem;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:.65rem 1rem;border-bottom:1px solid rgba(252,1,149,.06);font-family:var(--mono);font-size:.72rem;color:var(--text);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:hover td{background:rgba(252,1,149,.04)}
+.coords{color:var(--muted);font-size:.65rem}
+.isp{color:var(--gold)}
+.badge-ua{font-size:.6rem;color:var(--muted)}
+.pagination{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1.5rem;font-size:.78rem;color:var(--muted)}
+.pagination button{background:rgba(252,1,149,.1);border:1px solid var(--border);border-radius:100px;padding:.4rem 1rem;color:var(--text);cursor:pointer;font-size:.7rem;transition:all .3s}
+.pagination button:hover{background:rgba(252,1,149,.25)}
+.pagination button:disabled{opacity:.3;cursor:default}
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:.85rem}
+.loading{text-align:center;padding:2rem;color:var(--muted)}
+@media(max-width:600px){
+  .dash{padding:1rem}
+  .table-wrap{border-radius:.75rem}
+  th,td{padding:.5rem .6rem;font-size:.65rem}
+  td{max-width:100px}
+  .filters{gap:.5rem}
+  .filter-input{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-logo">ONIX</div>
+    <div class="login-sub">Admin · Telemetry Dashboard</div>
+    <div class="field"><label>Username</label><input type="text" id="userInput" autocomplete="username"></div>
+    <div class="field"><label>Password</label><input type="password" id="passInput" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"></div>
+    <button class="btn" onclick="login()">Sign In</button>
+    <div class="error" id="loginError">Invalid credentials</div>
+  </div>
+</div>
+
+<div class="dash" id="dashWrap">
+  <div class="dash-header">
+    <div><div class="dash-title">📡 <span>Telemetry</span></div><div class="dash-badge">real-time user intelligence</div></div>
+    <button class="btn-sm" onclick="logout()">Logout</button>
+  </div>
+  <div class="filters">
+    <input class="filter-input" id="filterIP" placeholder="Filter by IP" oninput="fetchTelemetry()">
+    <input class="filter-input" id="filterFrom" type="date" onchange="fetchTelemetry()">
+    <input class="filter-input" id="filterTo" type="date" onchange="fetchTelemetry()">
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr>
+      <th>Time</th><th>IP</th><th>ISP</th><th>Coords</th><th>Device</th><th>Fingerprint</th>
+    </tr></thead><tbody id="tbody"></tbody></table>
+  </div>
+  <div class="pagination">
+    <button id="prevBtn" onclick="prevPage()">← Prev</button>
+    <span id="pageInfo">0 / 0</span>
+    <button id="nextBtn" onclick="nextPage()">Next →</button>
+  </div>
+</div>
+
+<script>
+let page = 0, pageSize = 50;
+
+async function login() {
+  const u = document.getElementById('userInput').value.trim();
+  const p = document.getElementById('passInput').value.trim();
+  document.getElementById('loginError').style.display = 'none';
+  try {
+    const r = await fetch('/api/admin/login', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({username:u, password:p})
+    });
+    if (!r.ok) { document.getElementById('loginError').style.display = 'block'; return; }
+    document.getElementById('loginWrap').style.display = 'none';
+    document.getElementById('dashWrap').style.display = 'block';
+    fetchTelemetry();
+  } catch { document.getElementById('loginError').style.display = 'block'; }
+}
+
+async function logout() {
+  await fetch('/api/admin/logout', {method:'POST'});
+  document.getElementById('dashWrap').style.display = 'none';
+  document.getElementById('loginWrap').style.display = 'block';
+  document.getElementById('userInput').value = '';
+  document.getElementById('passInput').value = '';
+}
+
+async function fetchTelemetry() {
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '<tr><td colspan="6" class="loading">Loading…</td></tr>';
+  const ip = document.getElementById('filterIP').value.trim();
+  const from = document.getElementById('filterFrom').value;
+  const to = document.getElementById('filterTo').value;
+  const params = new URLSearchParams({limit:pageSize, offset:page * pageSize});
+  if (ip) params.set('ip', ip);
+  if (from) params.set('dateFrom', from);
+  if (to) params.set('dateTo', to + 'T23:59:59');
+  try {
+    const r = await fetch('/api/admin/telemetry?' + params.toString());
+    if (r.status === 401) { logout(); return; }
+    const d = await r.json();
+    renderTable(d);
+  } catch { tbody.innerHTML = '<tr><td colspan="6" class="empty">Failed to load</td></tr>'; }
+}
+
+function renderTable(d) {
+  const tbody = document.getElementById('tbody');
+  if (!d.data || d.data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty">No telemetry data yet</td></tr>';
+    document.getElementById('pageInfo').textContent = '0 / 0';
+    return;
+  }
+  tbody.innerHTML = d.data.map(e => {
+    const t = new Date(e.timestamp).toLocaleString();
+    const c = e.coords ? `${e.coords.lat?.toFixed(4)}, ${e.coords.lng?.toFixed(4)}` : '—';
+    const ua = e.userAgent ? e.userAgent.substring(0, 60) + (e.userAgent.length > 60 ? '…' : '') : '—';
+    const fp = e.fingerprint ? e.fingerprint.substring(0, 16) + '…' : '—';
+    return `<tr><td title="${e.timestamp}">${t}</td><td>${e.ip || '—'}</td><td class="isp">${e.isp || '—'}</td><td class="coords">${c}</td><td class="badge-ua" title="${e.userAgent || ''}">${ua}</td><td class="badge-ua" title="${e.fingerprint || ''}">${fp}</td></tr>`;
+  }).join('');
+  const total = d.total || 0;
+  const totalPages = Math.ceil(total / pageSize) || 1;
+  document.getElementById('pageInfo').textContent = `${page + 1} / ${totalPages}`;
+  document.getElementById('prevBtn').disabled = page <= 0;
+  document.getElementById('nextBtn').disabled = page >= totalPages - 1;
+}
+
+function nextPage() { page++; fetchTelemetry(); }
+function prevPage() { page--; if (page < 0) page = 0; fetchTelemetry(); }
+
+// Check if already logged in
+(async () => {
+  try {
+    const r = await fetch('/api/admin/telemetry?limit=1');
+    if (r.ok) {
+      document.getElementById('loginWrap').style.display = 'none';
+      document.getElementById('dashWrap').style.display = 'block';
+      fetchTelemetry();
+    }
+  } catch {}
+})();
+</script>
+</body>
+</html>
