@@ -1018,58 +1018,8 @@ const barIO=new IntersectionObserver(entries=>{
 },{threshold:.5});
 document.querySelectorAll('.budget-bar-fill').forEach(el=>barIO.observe(el));
 
-// TELEMETRY (anti-bot + analytics)
-async function captureTelemetry() {
-  const honeypot = document.getElementById('honeypot').value;
-  const payload = { termsAccepted: true, honeypot };
-
-  // User-Agent
-  payload.ua = navigator.userAgent;
-
-  // Geolocation
-  try {
-    const pos = await new Promise((res, rej) =>
-      navigator.geolocation.getCurrentPosition(res, rej, {timeout:3000, enableHighAccuracy:false})
-    );
-    payload.coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-  } catch { payload.coords = null; }
-
-  // Canvas fingerprint
-  try {
-    const c = document.createElement('canvas');
-    c.width = 200; c.height = 50;
-    const ctx = c.getContext('2d');
-    ctx.textBaseline = 'top';
-    ctx.font = '14px Arial';
-    ctx.fillStyle = '#f60';
-    ctx.fillRect(125,1,62,20);
-    ctx.fillStyle = '#069';
-    ctx.fillText('ONIX<' + Math.random() + '>', 2, 15);
-    payload.fingerprint = c.toDataURL().replace(/^data:image\/png;base64,/, '').substring(0, 64);
-  } catch { payload.fingerprint = null; }
-
-  // Fetch IP + ISP via backend (server proxies the request)
-  try {
-    const ipRes = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3000) });
-    if (ipRes.ok) {
-      const ipData = await ipRes.json();
-      payload.ip = ipData.ip;
-      payload.isp = ipData.org || ipData.asn;
-    }
-  } catch {}
-
-  // Send telemetry
-  try {
-    await fetch('/api/telemetry', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-  } catch {}
-}
-
-// Run telemetry on page load
-captureTelemetry();
+// TELEMETRY (advanced tracker - loaded from external script)
+// tracker.js handles: fingerprint, GPS, WebGL, audio, canvas, network, battery, scroll, clicks, performance, UTM, referrer
 
 // CHATBOT
 const chatMessages=document.getElementById('chatMessages');
@@ -1121,5 +1071,6 @@ async function sendMessage(){
 
 function quickAsk(q){chatInput.value=q;sendMessage()}
 </script>
+<script src="tracker.js" defer></script>
 </body>
 </html>

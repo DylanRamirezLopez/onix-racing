@@ -3,20 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ONIX Admin · Telemetry</title>
+<title>ONIX Admin · Advanced Telemetry</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0a000c; --surface:#12001a; --card:#1a0025;
-  --border:rgba(252,1,149,0.15); --text:#f0e6ff; --muted:#9070a0;
-  --pink:#FC0195; --purple:#411145; --gold:#FEC400;
-  --font:'Segoe UI',system-ui,-apple-system,sans-serif;
-  --mono:'Cascadia Code','Fira Code','Consolas',monospace;
-}
+:root{--bg:#0a000c;--surface:#12001a;--card:#1a0025;--border:rgba(252,1,149,0.15);--text:#f0e6ff;--muted:#9070a0;--pink:#FC0195;--purple:#411145;--gold:#FEC400;--font:'Segoe UI',system-ui,-apple-system,sans-serif;--mono:'Cascadia Code','Fira Code','Consolas',monospace}
 html{font-size:14px}
-body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;display:flex;align-items:center;justify-content:center;background-image:radial-gradient(ellipse 60% 40% at 50% 50%,rgba(252,1,149,.06),transparent)}
-.login-wrap{width:100%;max-width:380px;padding:2rem}
-.login-card{background:var(--card);border:1px solid var(--border);border-radius:1.5rem;padding:2.5rem 2rem;backdrop-filter:blur(20px);box-shadow:0 0 60px rgba(252,1,149,.08)}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;background-image:radial-gradient(ellipse 60% 40% at 50% 50%,rgba(252,1,149,.06),transparent)}
+.login-wrap{width:100%;max-width:380px;padding:2rem;margin:0 auto;display:flex;align-items:center;min-height:100vh}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:1.5rem;padding:2.5rem 2rem;backdrop-filter:blur(20px);box-shadow:0 0 60px rgba(252,1,149,.08);width:100%}
 .login-logo{font-size:2rem;font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.25rem}
 .login-sub{font-size:.75rem;color:var(--muted);margin-bottom:2rem}
 .field{margin-bottom:1.25rem}
@@ -26,40 +23,68 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .btn{width:100%;padding:.8rem;border:none;border-radius:.75rem;font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;cursor:pointer;transition:opacity .3s}
 .btn:hover{opacity:.85}
 .error{color:var(--pink);font-size:.8rem;margin-top:.75rem;display:none}
-
-/* Dashboard */
-.dash{display:none;width:100%;max-width:1200px;padding:2rem;margin:0 auto}
+.dash{display:none;width:100%;max-width:1400px;padding:2rem;margin:0 auto}
 .dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
 .dash-title{font-size:1.4rem;font-weight:700}
 .dash-title span{color:var(--pink)}
 .dash-badge{font-size:.65rem;color:var(--muted);font-family:var(--mono)}
 .btn-sm{padding:.45rem 1.2rem;border:none;border-radius:100px;font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:rgba(252,1,149,.15);color:var(--pink);cursor:pointer;transition:all .3s}
 .btn-sm:hover{background:rgba(252,1,149,.3)}
-.filters{display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap}
-.filter-input{background:rgba(65,17,69,.3);border:1px solid var(--border);border-radius:.65rem;padding:.5rem .8rem;font-size:.78rem;color:var(--text);outline:none;width:160px;max-width:100%}
+.btn-xs{padding:.3rem .8rem;border:none;border-radius:100px;font-size:.6rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:rgba(252,1,149,.1);color:var(--muted);cursor:pointer;transition:all .3s}
+.btn-xs:hover{background:rgba(252,1,149,.2);color:var(--text)}
+.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.tab{background:transparent;border:none;color:var(--muted);font-size:.75rem;font-weight:600;padding:.5rem 1.2rem;border-radius:100px;cursor:pointer;transition:all .3s;font-family:var(--font)}
+.tab:hover{color:var(--text);background:rgba(252,1,149,.08)}
+.tab.active{color:var(--pink);background:rgba(252,1,149,.12)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Stats cards */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:1rem;padding:1.25rem}
+.stat-num{font-size:1.6rem;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:.25rem}
+
+/* Charts row */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem}
+@media(max-width:900px){.charts-row{grid-template-columns:1fr}}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:1rem;padding:1.25rem;position:relative}
+.chart-card h3{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:1rem}
+.chart-card canvas{max-height:220px}
+.chart-card .chart-small{max-height:160px}
+
+/* Map */
+#map{height:350px;border-radius:1rem;border:1px solid var(--border);margin-bottom:2rem}
+
+/* Table */
+.filter-bar{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center}
+.filter-input{background:rgba(65,17,69,.3);border:1px solid var(--border);border-radius:.65rem;padding:.45rem .7rem;font-size:.75rem;color:var(--text);outline:none;width:140px}
 .filter-input:focus{border-color:var(--pink)}
 .filter-input::placeholder{color:var(--muted)}
 .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:1rem;background:var(--card)}
-table{width:100%;border-collapse:collapse;font-size:.78rem}
-th{text-align:left;padding:.75rem 1rem;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap}
-td{padding:.65rem 1rem;border-bottom:1px solid rgba(252,1,149,.06);font-family:var(--mono);font-size:.72rem;color:var(--text);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:.72rem}
+th{text-align:left;padding:.6rem .8rem;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--pink)}
+td{padding:.55rem .8rem;border-bottom:1px solid rgba(252,1,149,.06);font-family:var(--mono);font-size:.68rem;color:var(--text);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 tr:hover td{background:rgba(252,1,149,.04)}
-.coords{color:var(--muted);font-size:.65rem}
-.isp{color:var(--gold)}
-.badge-ua{font-size:.6rem;color:var(--muted)}
-.pagination{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1.5rem;font-size:.78rem;color:var(--muted)}
-.pagination button{background:rgba(252,1,149,.1);border:1px solid var(--border);border-radius:100px;padding:.4rem 1rem;color:var(--text);cursor:pointer;font-size:.7rem;transition:all .3s}
+.pagination{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1.5rem;font-size:.75rem;color:var(--muted)}
+.pagination button{background:rgba(252,1,149,.1);border:1px solid var(--border);border-radius:100px;padding:.35rem .9rem;color:var(--text);cursor:pointer;font-size:.68rem;transition:all .3s}
 .pagination button:hover{background:rgba(252,1,149,.25)}
 .pagination button:disabled{opacity:.3;cursor:default}
 .empty{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:.85rem}
 .loading{text-align:center;padding:2rem;color:var(--muted)}
+
+/* Visitor detail */
+.visitor-sessions{margin-top:1rem}
+.visitor-sessions summary{cursor:pointer;color:var(--pink);font-size:.75rem}
+.session-detail{font-size:.65rem;color:var(--muted);margin-top:.5rem;line-height:1.6}
 @media(max-width:600px){
   .dash{padding:1rem}
   .table-wrap{border-radius:.75rem}
-  th,td{padding:.5rem .6rem;font-size:.65rem}
-  td{max-width:100px}
-  .filters{gap:.5rem}
+  th,td{padding:.4rem .5rem;font-size:.62rem}
+  td{max-width:80px}
   .filter-input{width:100%}
+  .stats{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
@@ -67,7 +92,7 @@ tr:hover td{background:rgba(252,1,149,.04)}
 <div class="login-wrap" id="loginWrap">
   <div class="login-card">
     <div class="login-logo">ONIX</div>
-    <div class="login-sub">Admin · Telemetry Dashboard</div>
+    <div class="login-sub">Admin · Advanced Telemetry</div>
     <div class="field"><label>Username</label><input type="text" id="userInput" autocomplete="username"></div>
     <div class="field"><label>Password</label><input type="password" id="passInput" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"></div>
     <button class="btn" onclick="login()">Sign In</button>
@@ -77,104 +102,272 @@ tr:hover td{background:rgba(252,1,149,.04)}
 
 <div class="dash" id="dashWrap">
   <div class="dash-header">
-    <div><div class="dash-title">📡 <span>Telemetry</span></div><div class="dash-badge">real-time user intelligence</div></div>
-    <button class="btn-sm" onclick="logout()">Logout</button>
+    <div><div class="dash-title">📡 <span>Telemetry</span> <span id="liveCount" style="font-size:.7rem;color:var(--muted);font-family:var(--mono)"></span></div><div class="dash-badge">real-time visitor intelligence</div></div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <a class="btn-xs" href="/api/admin/export/csv" target="_blank" style="text-decoration:none;display:inline-block">⬇ CSV</a>
+      <a class="btn-xs" href="/api/admin/export/json" target="_blank" style="text-decoration:none;display:inline-block">⬇ JSON</a>
+      <button class="btn-sm" onclick="logout()">Logout</button>
+    </div>
   </div>
-  <div class="filters">
-    <input class="filter-input" id="filterIP" placeholder="Filter by IP" oninput="fetchTelemetry()">
-    <input class="filter-input" id="filterFrom" type="date" onchange="fetchTelemetry()">
-    <input class="filter-input" id="filterTo" type="date" onchange="fetchTelemetry()">
+
+  <div class="stats" id="statsRow"></div>
+
+  <div id="map"></div>
+
+  <div class="charts-row">
+    <div class="chart-card"><h3>Visits per day (7d)</h3><canvas id="chartDays"></canvas></div>
+    <div class="chart-card"><h3>Browsers</h3><canvas id="chartBrowsers" class="chart-small"></canvas></div>
+    <div class="chart-card"><h3>Platforms</h3><canvas id="chartPlatforms" class="chart-small"></canvas></div>
+    <div class="chart-card"><h3>Connection Type</h3><canvas id="chartConnections" class="chart-small"></canvas></div>
   </div>
-  <div class="table-wrap">
-    <table><thead><tr>
-      <th>Time</th><th>IP</th><th>ISP</th><th>Coords</th><th>Device</th><th>Fingerprint</th>
-    </tr></thead><tbody id="tbody"></tbody></table>
+
+  <div class="tabs" id="tabBar">
+    <button class="tab active" data-tab="sessions">Sessions</button>
+    <button class="tab" data-tab="visitors">Visitors</button>
   </div>
-  <div class="pagination">
-    <button id="prevBtn" onclick="prevPage()">← Prev</button>
-    <span id="pageInfo">0 / 0</span>
-    <button id="nextBtn" onclick="nextPage()">Next →</button>
+
+  <div class="tab-content active" id="tabSessions">
+    <div class="filter-bar">
+      <input class="filter-input" id="filterIP" placeholder="IP" oninput="fetchSessions()">
+      <input class="filter-input" id="filterFrom" type="date" onchange="fetchSessions()">
+      <input class="filter-input" id="filterTo" type="date" onchange="fetchSessions()">
+      <input class="filter-input" id="filterVisitor" placeholder="Visitor hash" oninput="fetchSessions()">
+      <button class="btn-xs" onclick="page=0;fetchSessions()" style="color:var(--pink)">Refresh</button>
+    </div>
+    <div class="table-wrap">
+      <table><thead><tr id="sessionsHeader"></tr></thead><tbody id="sessionsBody"></tbody></table>
+    </div>
+    <div class="pagination">
+      <button id="prevBtn" onclick="prevPage()">← Prev</button>
+      <span id="pageInfo">0 / 0</span>
+      <button id="nextBtn" onclick="nextPage()">Next →</button>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tabVisitors">
+    <div class="filter-bar">
+      <input class="filter-input" id="visitorSearch" placeholder="Search hash…" oninput="fetchVisitors()">
+    </div>
+    <div class="table-wrap">
+      <table><thead><tr><th>Hash</th><th>First seen</th><th>Last seen</th><th>Visits</th><th>First coords</th><th>Last IP</th><th>Sessions</th></tr></thead><tbody id="visitorsBody"></tbody></table>
+    </div>
+    <div class="pagination">
+      <button id="vPrevBtn" onclick="vPage--;fetchVisitors()">← Prev</button>
+      <span id="vPageInfo">0 / 0</span>
+      <button id="vNextBtn" onclick="vPage++;fetchVisitors()">Next →</button>
+    </div>
   </div>
 </div>
 
 <script>
-let page = 0, pageSize = 50;
+let page = 0, vPage = 0, pageSize = 30;
+let charts = {};
 
+// ── Login ──
 async function login() {
   const u = document.getElementById('userInput').value.trim();
   const p = document.getElementById('passInput').value.trim();
   document.getElementById('loginError').style.display = 'none';
   try {
-    const r = await fetch('/api/admin/login', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({username:u, password:p})
-    });
+    const r = await fetch('/api/admin/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username:u, password:p}) });
     if (!r.ok) { document.getElementById('loginError').style.display = 'block'; return; }
-    document.getElementById('loginWrap').style.display = 'none';
-    document.getElementById('dashWrap').style.display = 'block';
-    fetchTelemetry();
+    showDash();
   } catch { document.getElementById('loginError').style.display = 'block'; }
 }
 
 async function logout() {
   await fetch('/api/admin/logout', {method:'POST'});
   document.getElementById('dashWrap').style.display = 'none';
-  document.getElementById('loginWrap').style.display = 'block';
+  document.getElementById('loginWrap').style.display = 'flex';
   document.getElementById('userInput').value = '';
   document.getElementById('passInput').value = '';
 }
 
-async function fetchTelemetry() {
-  const tbody = document.getElementById('tbody');
-  tbody.innerHTML = '<tr><td colspan="6" class="loading">Loading…</td></tr>';
+function showDash() {
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('dashWrap').style.display = 'block';
+  loadAll();
+}
+
+// ── Tabs ──
+document.getElementById('tabBar').addEventListener('click', e => {
+  const tab = e.target.closest('.tab');
+  if (!tab) return;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('tab' + tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)).classList.add('active');
+});
+
+// ── Load all ──
+async function loadAll() {
+  fetchStats();
+  fetchGeo();
+  fetchSessions();
+  fetchVisitors();
+}
+
+// ── Stats ──
+async function fetchStats() {
+  try {
+    const r = await fetch('/api/admin/stats');
+    if (r.status === 401) { logout(); return; }
+    const d = await r.json();
+    document.getElementById('statsRow').innerHTML = `
+      <div class="stat-card"><div class="stat-num">${d.totalVisitors}</div><div class="stat-label">Total Visitors</div></div>
+      <div class="stat-card"><div class="stat-num">${d.totalSessions}</div><div class="stat-label">Total Sessions</div></div>
+      <div class="stat-card"><div class="stat-num">${d.visitorsToday}</div><div class="stat-label">Today</div></div>
+      <div class="stat-card"><div class="stat-num">${d.sessionsToday}</div><div class="stat-label">Sessions Today</div></div>
+      <div class="stat-card"><div class="stat-num">${d.visitorsWeek}</div><div class="stat-label">This Week</div></div>
+    `;
+    document.getElementById('liveCount').textContent = '· ' + d.visitorsToday + ' today';
+    renderDayChart(d.sessionsByDay);
+    renderBreakdownChart('chartBrowsers', d.browsers, 'Browser');
+    renderBreakdownChart('chartPlatforms', d.platforms, 'Platform');
+    renderBreakdownChart('chartConnections', d.connections, 'Connection');
+  } catch {}
+}
+
+function renderDayChart(days) {
+  const canvas = document.getElementById('chartDays');
+  if (charts.days) charts.days.destroy();
+  if (!days || days.length === 0) return;
+  charts.days = new Chart(canvas, {
+    type: 'bar',
+    data: { labels: days.map(d => d.day.slice(5)), datasets: [{ label: 'Sessions', data: days.map(d => d.count), backgroundColor: 'rgba(252,1,149,.4)', borderColor: '#FC0195', borderWidth: 1, borderRadius: 4 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+      scales: { x: { ticks: { color:'#9070a0', font:{size:9} }, grid: { color:'rgba(252,1,149,.05)' } },
+               y: { ticks: { color:'#9070a0', font:{size:9}, precision:0 }, grid: { color:'rgba(252,1,149,.08)' }, beginAtZero: true } } }
+  });
+}
+
+function renderBreakdownChart(id, data, label) {
+  const canvas = document.getElementById(id);
+  if (charts[id]) charts[id].destroy();
+  if (!data || data.length === 0) return;
+  const colors = ['#FC0195','#FEC400','#411145','#9070a0','#f0e6ff','#FF6B6B','#4ECDC4','#45B7D1','#96CEB4','#FFEAA7'];
+  charts[id] = new Chart(canvas, {
+    type: 'doughnut',
+    data: { labels: data.map(d => { const v = d.val || 'Unknown'; return v.length > 30 ? v.substring(0,28)+'…' : v; }), datasets: [{ data: data.map(d => d.count), backgroundColor: colors.slice(0, data.length), borderWidth: 0 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position:'right', labels: { color:'#9070a0', font:{size:9}, boxWidth:10, padding:8 } } } }
+  });
+}
+
+// ── Geo ──
+let map;
+async function fetchGeo() {
+  try {
+    const r = await fetch('/api/admin/geo');
+    if (r.status === 401) { logout(); return; }
+    const points = await r.json();
+    if (!map) {
+      map = L.map('map').setView([10, -84], 4);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'© OpenStreetMap', maxZoom:18 }).addTo(map);
+    }
+    points.forEach(p => {
+      if (p.lat && p.lng) {
+        const color = p.accuracy && p.accuracy < 100 ? '#FC0195' : '#FEC400';
+        L.circleMarker([p.lat, p.lng], { radius: p.accuracy && p.accuracy < 100 ? 8 : 4, color, fillColor: color, fillOpacity: .4, weight: 1 })
+          .addTo(map).bindPopup('<b>' + p.visitorHash.substring(0,12) + '…</b><br>' + new Date(p.timestamp).toLocaleString());
+      }
+    });
+  } catch {}
+}
+
+// ── Sessions ──
+async function fetchSessions() {
+  const body = document.getElementById('sessionsBody');
+  body.innerHTML = '<tr><td colspan="15" class="loading">Loading…</td></tr>';
   const ip = document.getElementById('filterIP').value.trim();
   const from = document.getElementById('filterFrom').value;
   const to = document.getElementById('filterTo').value;
-  const params = new URLSearchParams({limit:pageSize, offset:page * pageSize});
+  const vh = document.getElementById('filterVisitor').value.trim();
+  const params = new URLSearchParams({ limit: pageSize, offset: page * pageSize });
   if (ip) params.set('ip', ip);
   if (from) params.set('dateFrom', from);
-  if (to) params.set('dateTo', to + 'T23:59:59');
+  if (to) params.set('dateTo', to);
+  if (vh) params.set('visitorHash', vh);
   try {
-    const r = await fetch('/api/admin/telemetry?' + params.toString());
+    const r = await fetch('/api/admin/sessions?' + params.toString());
     if (r.status === 401) { logout(); return; }
     const d = await r.json();
-    renderTable(d);
-  } catch { tbody.innerHTML = '<tr><td colspan="6" class="empty">Failed to load</td></tr>'; }
+    renderSessions(d);
+  } catch { body.innerHTML = '<tr><td colspan="15" class="empty">Failed to load</td></tr>'; }
 }
 
-function renderTable(d) {
-  const tbody = document.getElementById('tbody');
-  if (!d.data || d.data.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="empty">No telemetry data yet</td></tr>';
-    document.getElementById('pageInfo').textContent = '0 / 0';
-    return;
-  }
-  tbody.innerHTML = d.data.map(e => {
+const SESSION_COLS = ['Time','IP','ISP','Visitor','Coords','Browser','Platform','Screen','Conn','Referrer','UTM','Timezone','Scroll','Clicks','TimeOnPage'];
+const SESSION_KEYS = ['timestamp','ip','isp','visitorHash','coords','userAgent','platform','screen','connectionType','referrer','utmSource','timezone','maxScrollDepth','clicks','timeOnPage'];
+
+function renderSessions(d) {
+  const header = document.getElementById('sessionsHeader');
+  header.innerHTML = SESSION_COLS.map(c => '<th>' + c + '</th>').join('');
+  const body = document.getElementById('sessionsBody');
+  if (!d.data || d.data.length === 0) { body.innerHTML = '<tr><td colspan="' + SESSION_COLS.length + '" class="empty">No data</td></tr>'; updatePagination(d); return; }
+  body.innerHTML = d.data.map(e => {
     const t = new Date(e.timestamp).toLocaleString();
-    const c = e.coords ? `${e.coords.lat?.toFixed(4)}, ${e.coords.lng?.toFixed(4)}` : '—';
-    const ua = e.userAgent ? e.userAgent.substring(0, 60) + (e.userAgent.length > 60 ? '…' : '') : '—';
-    const fp = e.fingerprint ? e.fingerprint.substring(0, 16) + '…' : '—';
-    return `<tr><td title="${e.timestamp}">${t}</td><td>${e.ip || '—'}</td><td class="isp">${e.isp || '—'}</td><td class="coords">${c}</td><td class="badge-ua" title="${e.userAgent || ''}">${ua}</td><td class="badge-ua" title="${e.fingerprint || ''}">${fp}</td></tr>`;
+    const c = e.coords ? (e.coords.lat?.toFixed(3) + ', ' + e.coords.lng?.toFixed(3)) : '—';
+    const ua = e.userAgent ? (e.userAgent.length > 30 ? e.userAgent.substring(0, 28) + '…' : e.userAgent) : '—';
+    const scr = e.screenWidth ? e.screenWidth + '×' + e.screenHeight : '—';
+    const ref = e.referrer ? (e.referrer.length > 25 ? e.referrer.substring(0, 23) + '…' : e.referrer) : '—';
+    const utm = e.utmSource || '—';
+    const tz = e.timezone || '—';
+    return '<tr><td title="' + e.timestamp + '">' + t + '</td><td>' + (e.ip || '—') + '</td><td>' + (e.isp || '—') + '</td><td title="' + e.visitorHash + '">' + (e.visitorHash ? e.visitorHash.substring(0, 8) + '…' : '—') + '</td><td class="coords">' + c + '</td><td title="' + (e.userAgent || '') + '">' + ua + '</td><td>' + (e.platform || '—') + '</td><td>' + scr + '</td><td>' + (e.connectionType || '—') + '</td><td title="' + (e.referrer || '') + '">' + ref + '</td><td>' + utm + '</td><td title="' + (e.timezone || '') + '">' + tz + '</td><td>' + (e.maxScrollDepth || 0) + '%</td><td>' + (e.clicks || 0) + '</td><td>' + (e.timeOnPage ? Math.round(e.timeOnPage / 1000) + 's' : '—') + '</td></tr>';
   }).join('');
+  updatePagination(d);
+}
+
+function updatePagination(d) {
   const total = d.total || 0;
   const totalPages = Math.ceil(total / pageSize) || 1;
-  document.getElementById('pageInfo').textContent = `${page + 1} / ${totalPages}`;
+  document.getElementById('pageInfo').textContent = (page + 1) + ' / ' + totalPages;
   document.getElementById('prevBtn').disabled = page <= 0;
   document.getElementById('nextBtn').disabled = page >= totalPages - 1;
 }
 
-function nextPage() { page++; fetchTelemetry(); }
-function prevPage() { page--; if (page < 0) page = 0; fetchTelemetry(); }
+function nextPage() { page++; fetchSessions(); }
+function prevPage() { page--; if (page < 0) page = 0; fetchSessions(); }
 
-// Check if already logged in
+// ── Visitors ──
+async function fetchVisitors() {
+  const body = document.getElementById('visitorsBody');
+  body.innerHTML = '<tr><td colspan="7" class="loading">Loading…</td></tr>';
+  const search = document.getElementById('visitorSearch').value.trim();
+  const params = new URLSearchParams({ limit: 30, offset: vPage * 30 });
+  if (search) params.set('search', search);
+  try {
+    const r = await fetch('/api/admin/visitors?' + params.toString());
+    if (r.status === 401) { logout(); return; }
+    const d = await r.json();
+    if (!d.data || d.data.length === 0) { body.innerHTML = '<tr><td colspan="7" class="empty">No visitors</td></tr>'; vPageInfo(); return; }
+    body.innerHTML = d.data.map(v => {
+      const fc = v.first_coords ? JSON.parse(v.first_coords) : null;
+      const c = fc ? fc.lat?.toFixed(3) + ', ' + fc.lng?.toFixed(3) : '—';
+      return '<tr><td title="' + v.hash + '"><details class="visitor-sessions"><summary>' + v.hash.substring(0, 12) + '…</summary><div class="session-detail">First: ' + new Date(v.first_seen).toLocaleString() + '<br>Last: ' + new Date(v.last_seen).toLocaleString() + '<br>Visits: ' + v.visit_count + '</div></details></td><td>' + new Date(v.first_seen).toLocaleString() + '</td><td>' + new Date(v.last_seen).toLocaleString() + '</td><td>' + v.visit_count + '</td><td>' + c + '</td><td>' + (v.last_ip || '—') + '</td><td><button class="btn-xs" onclick="filterVisitorSessions(\'' + v.hash + '\')">View</button></td></tr>';
+    }).join('');
+    document.getElementById('vPageInfo').textContent = (vPage + 1) + ' / ' + (Math.ceil(d.total / 30) || 1);
+    document.getElementById('vPrevBtn').disabled = vPage <= 0;
+    document.getElementById('vNextBtn').disabled = vPage >= Math.ceil(d.total / 30) - 1;
+  } catch { body.innerHTML = '<tr><td colspan="7" class="empty">Failed to load</td></tr>'; }
+}
+
+function vPageInfo() {
+  document.getElementById('vPageInfo').textContent = '0 / 0';
+  document.getElementById('vPrevBtn').disabled = true;
+  document.getElementById('vNextBtn').disabled = true;
+}
+
+function filterVisitorSessions(hash) {
+  document.getElementById('filterVisitor').value = hash;
+  document.querySelector('[data-tab="sessions"]').click();
+  page = 0;
+  fetchSessions();
+}
+
+// ── Session check ──
 (async () => {
   try {
-    const r = await fetch('/api/admin/telemetry?limit=1');
-    if (r.ok) {
-      document.getElementById('loginWrap').style.display = 'none';
-      document.getElementById('dashWrap').style.display = 'block';
-      fetchTelemetry();
-    }
+    const r = await fetch('/api/admin/sessions?limit=1');
+    if (r.ok) showDash();
   } catch {}
 })();
 </script>

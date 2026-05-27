@@ -4,3 +4,9 @@
 # Node
 node_modules/
 npm-debug.log*
+
+# Runtime data
+*.db
+*.db-shm
+*.db-wal
+*.bak
