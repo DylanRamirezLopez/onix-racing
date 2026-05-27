@@ -1267,3 +1267,17 @@ Mass: 65g. Length: 195.7mm. The design reaches the allowed mass limit. Mass dist
 
 Design Reflection
 Small geometric changes significantly impact performance. Manufacturing inconsistency from 3D printer calibration was a key challenge. We refined processes for more reliable results.
+
+ENTRY 3D CLASS
+
+DESCRIPCIÓN GENERAL
+An introductory category where students design, analyze, test, manufacture, and race with a miniature car that is produced using 3D printing.
+This category introduces the key elements of the competition design, analysis, testing, manufacturing, racing, and project management in an accessible and practical way, allowing participants to develop both technical and teamwork skills while gaining hands-on experience with modern engineering tools.
+
+WHAT'S INVOLVED?
+
+Designing the car using CAD software
+Analyzing performance basics (aerodynamics, weight, stability)
+3D printing the main components of the car
+Design/Enterprise and Engineering portfolio
+Oral presentation of maximum 10 minutes
