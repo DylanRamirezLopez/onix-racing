@@ -1281,3 +1281,86 @@ Analyzing performance basics (aerodynamics, weight, stability)
 3D printing the main components of the car
 Design/Enterprise and Engineering portfolio
 Oral presentation of maximum 10 minutes
+
+=============================================================================
+PRESUPUESTO DETALLADO (BUDGET BREAKDOWN)
+=============================================================================
+
+Fase / Mes | Entregable / Tarea | Insumo o Gasto Relacionado | Detalle | Gasto Estimado | Monto Real | Diferencia
+
+Org. (Marzo) | Registro oficial y afiliación de equipos | Cuota de inscripción | No aplica | 0 | 0 | 0
+Org. (Marzo) | Compra de Kits Oficiales (Starter Kits) | Bloques, ruedas, ejes, halo, cascos | No aplica | 0 | 0 | 0
+Marca (Marzo) | Diseño de Team Logo | Software de diseño (gratis/pago) | CapCut, Canva | 1,300 | 1,700 | -400
+Marca (Marzo) | Team Photo (Sesión fotográfica) | Fondo, iluminación o uniformes base | Transporte Honda, alimentación | 3,000 | 6,000 | -3,000
+Org. (Marzo) | Firmas de Consentimiento de imagen | Imagen de Honda, Imagen Steam | Impresión de formularios | 6,000 | 1,000 | 5,000
+Marca (Marzo) | Team Video (Guion y producción) | Manuales y reglamento, Calendario | Edición de video | 0 | 35,000 | -35,000
+Marca (Marzo) | Investigación Aerodinámica y Bocetos | No aplica | N/A | 55,000 | 300 | 54,700
+Ingeniería (Abril) | Lanzamiento de Redes Sociales | Papel, lápices (IsoSketch) | No aplica | 0 | 300 | -300
+Marca (Abril) | Cartulina | Impresión | Materiales para activación | 2,000 | 1,500 | 500
+Marca (Abril) | Materiales para activación | Varios | | 50,000 | 35,000 | 15,000
+Ingeniería (Abril) | Renders del auto (Fusion 360) | No aplica | N/A | 0 | 0 | 0
+Ingeniería (Abril) | Dibujos Técnicos (Vistas ortogonales) | No aplica | N/A | 0 | 0 | 0
+Ingeniería (Abril) | Modelo Digital del Auto (CAD) | No aplica | N/A | 0 | 0 | 0
+Manufactura (Mayo) | Impresión 3D de piezas (2 autos) | PLA-Lightweight | Filamento PLA ABS | 22,000 | 20,617 | 1,383
+Portafolio (Mayo) | Design Engineering and Enterprise Port | Impresión color y encuadernación | Portafolios | 45,000 | 11,000 | 34,000
+Empresa (Mayo) | Diseño de Pit Display (Stand Digital) | Mesa, Materiales de decoración stand, Túnel de viento, Banner | Varios | 60,000 | 122,000 | -62,000
+Manufactura (Mayo) | Acabado: Lijado y Pintura | Dremel, Lijas finas, pintura y laca | Varios | 50,000 | 24,000 | 26,000
+Manufactura (Mayo) | Barniz | Barniz | | 7,000 | 3,500 | 3,500
+Manufactura (Mayo) | Lijas | Lijas | | 3,000 | 1,500 | 1,500
+Manufactura (Mayo) | Latas pintura | Pintura | | 20,000 | 25,000 | -5,000
+Empresa (Mayo) | Producción de Uniformes del equipo | Polos Polo o camisetas con logos | Sublimación | 316,965 | 112,000 | 204,965
+Competencia (Junio) | Ensayo de Presentación Verbal | Laptop con puerto HDMI | No aplica | 0 | 0 | 0
+Logística (Junio) | Logística para Final Entry 3D | Transporte ida y vuelta dos días, Alimentación | Transporte y alimentación | 100,000 | 70,000 | 30,000
+Logística (Junio) | Kit de Emergencia de Carrera | Pegamento, calibres, herramientas | Insumos | 10,000 | 10,000 | 0
+Empresa (Junio) | Merch | Llaveros, gorras, botellas | Mercancía | 49,000 | 80,000 | -31,000
+
+Total general | | | | 761,925 | 681,282 | 80,643
+
+=============================================================================
+FLUJO DE EFECTIVO (CASH FLOW)
+Expresado en colones
+=============================================================================
+
+| Concepto | marzo 2026 | abril 2026 | mayo 2026 | junio 2026 |
+|---|---|---|---|---|
+| INGRESOS | | | | |
+| Coopecoceic | 500,000.00 | | | |
+| Dinos Pizza | 100,000.00 | | | |
+| El Rincón del café | 20,000.00 | | | |
+| Rooster Jacks | 30,000.00 | 30,000.00 | | |
+| Tártaras Doña Aurea | | 50,000.00 | | |
+| Namu Costa Rica | | 20,000.00 | | |
+| Recaudación del Family Day | | 104,500.00 | | |
+| Pagos de camisas versión fan | | 91,530.00 | 129,300.00 | 81,897.00 |
+| Total ingresos | 530,000.00 | 386,030.00 | 159,300.00 | 81,897.00 |
+| | | | | |
+| EGRESOS | | | | |
+| Bienvenida | 11,920.00 | | | |
+| Diseño de edición | 1,300.00 | 12,400.00 | | |
+| Transporte de Honda | | 55,000.00 | | |
+| Actividad de presentación | | 2,000.00 | | |
+| Madera llaveros | | 8,000.00 | | |
+| Alimentación | | 19,690.00 | 30,099.00 | |
+| Actividad Family Day | | 22,500.00 | | |
+| Filamento PLA | | | 20,617.00 | |
+| Túnel de viento | | 17,700.00 | 20,200.00 | |
+| Latas de pintura | | | 25,985.00 | |
+| Dremel | | | 24,000.00 | |
+| Materiales | 12,500.00 | 5,600.00 | 25,613.00 | |
+| Merch consumible | | | 2,775.00 | |
+| Merch | | | | 48,477.00 |
+| Micrófono | | | | 12,500.00 |
+| Camisas y uniformes | | | 316,965.00 | |
+| Pit Display | | | | 122,144.00 |
+| Logística | | | | 28,076.00 |
+| Total egresos | 88,490.00 | 130,516.00 | 554,459.00 | 211,197.00 |
+| | | | | |
+| RESUMEN | marzo 2026 | abril 2026 | mayo 2026 | junio 2026 |
+| Entradas | 530,000.00 | 827,540.00 | 856,324.00 | 301,865.00 |
+| Salidas | 88,490.00 | 130,516.00 | 554,459.00 | 211,197.00 |
+| Flujo Neto efectivo mensual | 441,510.00 | 697,024.00 | 301,865.00 | 90,668.00 |
+| Saldo efectivo neto mensual | 441,510.00 | 697,024.00 | 301,865.00 | 90,668.00 |
+
+=============================================================================
+FIN DEL DOCUMENTO - PRESUPUESTO Y FLUJO DE EFECTIVO
+=============================================================================
